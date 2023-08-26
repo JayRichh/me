@@ -7,97 +7,94 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
-import * as THREE from 'three';
-import { io } from "socket.io-client";
+import { defineComponent, ref, onMounted, onBeforeUnmount } from 'vue';
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import Stats from "three/examples/jsm/libs/stats.module";
+import { GUI } from "dat.gui";
 import TWEEN from "@tweenjs/tween.js";
-import { createFixedScene } from "../scenes/createFixedScene";
-import { createOrbitScene } from "../scenes/createOrbitScene";
+import { socket, eventsEmitter } from '../sockets/socketClient';
+import { initThreeJS } from '../../helpers/threeHelpers';
 
 export default defineComponent({
   name: 'GameComponent',
   setup() {
-    const gameMode = ref(false);
-    const socket = io();
-    let myId = "";
-    let timestamp = Date.now();
-    const clientCubes: { [id: string]: THREE.Mesh } = {};
+    const scene = ref(new THREE.Scene());
+    const camera = ref(new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000));
+    const renderer = ref(new THREE.WebGLRenderer());
+    const controls = ref(new OrbitControls(camera.value, renderer.value.domElement));
+    const clientCubes = ref<{ [id: string]: THREE.Mesh }>({});
+    const stats = new Stats();
+    const gui = new GUI();
 
-    socket.on("connect", function () {
-      console.log("connect");
-    });
-    socket.on("disconnect", function (message: any) {
-      console.log("disconnect " + message);
-    });
-    
-    let myObject3D = new THREE.Object3D();
-    socket.on("id", (id: any) => {
-      myId = id;
-      setInterval(() => {
-        socket.emit("update", {
-          t: Date.now(),
-          p: myObject3D.position,
-          r: myObject3D.rotation,
-        });
-      }, 50);
-    });
-    socket.on("clients", (clients: any) => {
-      let pingStatsHtml = "Socket Ping Stats<br/><br/>";
-      Object.keys(clients).forEach((p) => {
-        timestamp = Date.now();
-        pingStatsHtml += p + " " + (timestamp - clients[p].t) + "ms<br/>";
-        if (!clientCubes[p]) {
-          let geometry = new THREE.BoxGeometry(1, 1, 1); // Define geometry
-          let material = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // Define material
-          clientCubes[p] = new THREE.Mesh(geometry, material);
-          clientCubes[p].name = p;
-          myObject3D.add(clientCubes[p]);
-        } else {
-          if (clients[p].p) {
-            new TWEEN.Tween(clientCubes[p].position)
-              .to(
-                {
-                  x: clients[p].p.x,
-                  y: clients[p].p.y,
-                  z: clients[p].p.z,
-                },
-                50
-              )
-              .start();
-          }
-          if (clients[p].r) {
-            new TWEEN.Tween(clientCubes[p].rotation)
-              .to(
-                {
-                  x: clients[p].r._x,
-                  y: clients[p].r._y,
-                  z: clients[p].r._z,
-                },
-                50
-              )
-              .start();
-          }
-        }
-      });
-      (document.getElementById("pingStats") as HTMLDivElement).innerHTML =
-        pingStatsHtml;
-    });
-    socket.on("removeClient", (id: string) => {
-      scene.remove(scene.getObjectByName(id) as THREE.Object3D);
-    });
+    const gameMode = ref(false);
+
+    camera.value.position.z = 4;
 
     const toggleGameMode = () => {
       gameMode.value = !gameMode.value;
-      if (gameMode.value) {
-        createOrbitScene(/* parameters */);
-      } else {
-        createFixedScene(/* parameters */);
-      }
+    };
+
+    // GUI setup
+    const cubeFolder = gui.addFolder("Cube");
+    const cubePositionFolder = cubeFolder.addFolder("Position");
+    cubePositionFolder.add(camera.value.position, "x", -5, 5);
+    cubePositionFolder.add(camera.value.position, "z", -5, 5);
+    cubePositionFolder.open();
+
+    // Event listeners
+    window.addEventListener("resize", onWindowResize, false);
+
+    function onWindowResize() {
+      camera.value.aspect = window.innerWidth / window.innerHeight;
+      camera.value.updateProjectionMatrix();
+      renderer.value.setSize(window.innerWidth, window.innerHeight);
+      render();
+    }
+
+    const animate = () => {
+      requestAnimationFrame(animate);
+      controls.value.update();
+      TWEEN.update();
+      render();
+      stats.update();
+    };
+
+    // Render function
+    const render = () => {
+      renderer.value.render(scene.value, camera.value);
     };
 
     onMounted(() => {
-      createFixedScene(/* parameters */);
+      initThreeJS(scene.value, clientCubes.value);
+      const gameCanvas = document.getElementById('gameCanvas');
+      if (gameCanvas) {
+        renderer.value.setSize(gameCanvas.clientWidth, gameCanvas.clientHeight);
+        gameCanvas.appendChild(renderer.value.domElement);
+      }
+      eventsEmitter.on("removeClient", id => {
+        const objectToRemove = scene.value.getObjectByName(id);
+        if (objectToRemove) {
+          scene.value.remove(objectToRemove);
+        }
+      });
+      animate();
     });
+
+    onBeforeUnmount(() => {
+      eventsEmitter.off("removeClient", removeClient);
+    });
+
+    const removeClient = (...args: any[]) => {
+      const id = args[0];
+      if (typeof id !== 'string') {
+        throw new Error('Expected first argument to be a string');
+      }
+      if (clientCubes.value[id]) {
+        scene.value.remove(clientCubes.value[id]);
+        delete clientCubes.value[id];
+      }
+    };
 
     return {
       toggleGameMode,

@@ -9,24 +9,24 @@
 import { defineComponent, onMounted, ref } from 'vue';
 import * as THREE from 'three';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { createFixedScene } from "../scenes/createFixedScene";
+import { initThreeJS } from '../../helpers/threeHelpers';
 
 export default defineComponent({
   name: 'HomeView',
   setup() {
     const scene = ref(new THREE.Scene());
-    const camera = ref(new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    ));
+    const camera = ref(new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000));
     const renderer = ref(new THREE.WebGLRenderer());
     const controls = ref(new OrbitControls(camera.value, renderer.value.domElement));
+    const clientCubes = ref<{ [id: string]: THREE.Mesh }>({});
 
     onMounted(() => {
-      renderer.value.setSize(window.innerWidth, window.innerHeight);
-      document.body.appendChild(renderer.value.domElement);
+      initThreeJS(scene.value, clientCubes.value);
+      const threeContainer = document.getElementById('three-container');
+      if (threeContainer) {
+        renderer.value.setSize(threeContainer.clientWidth, threeContainer.clientHeight);
+        threeContainer.appendChild(renderer.value.domElement);
+      }
       window.addEventListener("resize", onWindowResize, false);
     });
 
