@@ -1,7 +1,8 @@
 <template>
   <div id="home-container">
     <div id="three-container"></div>
-    <!-- ...other cards -->
+    <button @click="toggleView">Toggle View</button>
+    <div id="three-container"></div>
   </div>
 </template>
 
@@ -10,6 +11,8 @@ import { defineComponent, onMounted, ref } from 'vue';
 import * as THREE from 'three';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { initThreeJS } from '../../helpers/threeHelpers';
+import { createOrbitScene } from '../scenes/createOrbitScene';
+import { createFixedScene } from '../scenes/createFixedScene';
 
 export default defineComponent({
   name: 'HomeView',
@@ -19,14 +22,21 @@ export default defineComponent({
     const renderer = ref(new THREE.WebGLRenderer());
     const controls = ref(new OrbitControls(camera.value, renderer.value.domElement));
     const clientCubes = ref<{ [id: string]: THREE.Mesh }>({});
+    const isOrbit = ref(false);
 
-    onMounted(() => {
+    onMounted(async () => {
       initThreeJS(scene.value, clientCubes.value);
       const threeContainer = document.getElementById('three-container');
-      if (threeContainer) {
-        renderer.value.setSize(threeContainer.clientWidth, threeContainer.clientHeight);
-        threeContainer.appendChild(renderer.value.domElement);
-      }
+      if (!threeContainer) throw new Error("Failed to get the three-container element");
+      renderer.value.setSize(threeContainer.clientWidth, threeContainer.clientHeight);
+      threeContainer.appendChild(renderer.value.domElement);
+      
+      // Import Vue components
+      const AboutComponent = (await import('../components/About.vue')).default;
+      const ContactComponent = (await import('../components/Contact.vue')).default;
+      const ProjectsComponent = (await import('../components/Projects.vue')).default;
+      const vueComponents = [AboutComponent, ContactComponent, ProjectsComponent];
+      renderScene();
       window.addEventListener("resize", onWindowResize, false);
     });
 
@@ -41,13 +51,35 @@ export default defineComponent({
       renderer.value.render(scene.value, camera.value);
     };
 
+    const renderScene = async () => {
+      const threeContainer = document.getElementById('three-container');
+      if (!threeContainer) throw new Error("Failed to get the three-container element");
+      // Import Vue components
+      const AboutComponent = (await import('../components/About.vue')).default;
+      const ContactComponent = (await import('../components/Contact.vue')).default;
+      const ProjectsComponent = (await import('../components/Projects.vue')).default;
+      const vueComponents = [AboutComponent, ContactComponent, ProjectsComponent];
+      if (isOrbit.value) {
+        createOrbitScene(threeContainer, vueComponents.map(component => component.$el));
+      } else {
+        createFixedScene(threeContainer, vueComponents.map(component => component.$el));
+      }
+    };
+
+    const toggleView = () => {
+      isOrbit.value = !isOrbit.value;
+      renderScene();
+    };
+
     return {
       scene,
       camera,
       renderer,
       controls,
       onWindowResize,
-      render
+      render,
+      renderScene,
+      toggleView,
     };
   },
 });

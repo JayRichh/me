@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, computed } from 'vue';
 
 export default defineComponent({
   name: 'ContactComponent',
@@ -20,9 +20,13 @@ export default defineComponent({
     const email = ref('');
     const message = ref('');
 
+    const isFormValid = computed(() => {
+      return name.value && email.value && message.value;
+    });
     const submitForm = () => {
-      // Handle form submission
-      console.log(`Name: ${name.value}, Email: ${email.value}, Message: ${message.value}`);
+      if (isFormValid.value) {
+        console.log(`Name: ${name.value}, Email: ${email.value}, Message: ${message.value}`);
+      }
     };
 
     return {

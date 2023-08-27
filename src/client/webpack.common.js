@@ -1,7 +1,7 @@
 const path = require("path");
 
 module.exports = {
-  entry: "./src/client/client.ts",
+  entry: "./src/main.ts",
   module: {
     rules: [
       {
@@ -9,12 +9,13 @@ module.exports = {
         use: "ts-loader",
         exclude: /node_modules/,
       },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader'
+      }
     ],
   },
   resolve: {
-    alias: {
-      three: path.resolve("./node_modules/three"),
-    },
     extensions: [".tsx", ".ts", ".js"],
   },
   output: {
