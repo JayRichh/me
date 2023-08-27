@@ -1,7 +1,6 @@
 # 3D Multiplayer Portfolio
 
 [![Tech Stack](https://img.shields.io/badge/Tech%20Stack-Vue%20|%20Three.js%20|%20TypeScript%20|%20Socket.io-green?style=flat-square)](link-to-tech-stack)
-[![Languages](https://img.shields.io/badge/Languages-English-yellow?style=flat-square)](link-to-languages)
 
 Work In Progress
 
