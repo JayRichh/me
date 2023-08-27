@@ -11,7 +11,7 @@
 import { defineComponent, ref, onMounted } from 'vue';
 import { createOrbitScene } from '../scenes/createOrbitScene';
 import { createFixedScene } from '../scenes/createFixedScene';
-import { toggleGameMode as toggleGameModeHelper } from '../../helpers/toggleGameMode';
+import { toggleGameMode } from '../../helpers/gameUtils';
 
 export default defineComponent({
   name: 'Game',

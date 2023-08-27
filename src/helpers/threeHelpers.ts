@@ -7,6 +7,9 @@ interface ClientData {
   r?: { _x: number; _y: number; _z: number };
 }
 
+let removeClientListener: ((id: string) => void) | null = null;
+let updateClientsListener: ((clients: Record<string, ClientData>) => void) | null = null;
+
 export const initThreeJS = (scene: THREE.Scene, clientCubes: Record<string, THREE.Mesh>) => {
   const gridHelper = new THREE.GridHelper(10, 10);
   gridHelper.position.y = -0.5;
@@ -41,4 +44,31 @@ export const initThreeJS = (scene: THREE.Scene, clientCubes: Record<string, THRE
       }
     });
   });
+
+  removeClientListener = (id: string) => {
+    const cube = clientCubes[id];
+    if (cube) {
+      scene.remove(cube);
+      delete clientCubes[id];
+    }
+  };
+
+  updateClientsListener = (clients: Record<string, ClientData>) => {
+    Object.entries(clients).forEach(([id, clientData]) => {
+      let cube = clientCubes[id];
+      if (!cube) {
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+        clientCubes[id] = cube;
+      }
+      if (clientData.p) {
+        cube.position.set(clientData.p.x, clientData.p.y, clientData.p.z);
+      }
+    });
+  };
+
+  eventsEmitter.on("removeClient", removeClientListener);
+  eventsEmitter.on("updateClients", updateClientsListener);
 };

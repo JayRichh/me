@@ -84,4 +84,12 @@ const updateClientCube = (id: string, clientData: any) => {
   }
 };
 
+export const updateClientsListener = (callback: (clients: Record<string, any>) => void) => {
+  socket.on("clients", callback);
+
+  return () => {
+    socket.off("clients", callback);
+  };
+};
+
 export { socket, eventsEmitter };

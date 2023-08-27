@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref, onBeforeUnmount } from 'vue';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { createOrbitScene } from '../scenes/createOrbitScene';
@@ -25,12 +25,14 @@ import { createFixedScene } from '../scenes/createFixedScene';
 import AboutComponent from './About.vue';
 import ProjectsComponent from './Projects.vue';
 import ContactComponent from './Contact.vue';
+import { toggleGameMode } from '../../helpers/gameUtils';
+import { useStore } from 'vuex';
 
 type ControlsType = {
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
   renderer: THREE.WebGLRenderer;
-  controls: OrbitControls | null; // Ensure this type matches the type returned by the functions
+  controls: OrbitControls | null;
 };
 
 export default defineComponent({
@@ -41,6 +43,7 @@ export default defineComponent({
     ContactComponent,
   },
   setup() {
+    const store = useStore();
     const isOrbit = ref(false);
     const controls = ref<ControlsType>({
       scene: new THREE.Scene(),
@@ -48,35 +51,37 @@ export default defineComponent({
       renderer: new THREE.WebGLRenderer(),
       controls: null,
     });
+    const gameMode = ref(false);
 
-    const toggleView = () => {
-      isOrbit.value = !isOrbit.value;
+    const initializeScene = () => {
       const threeContainer = document.getElementById('three-container');
       const vueComponents = Array.from(document.querySelectorAll('.vue-component')) as HTMLElement[];
       if (threeContainer) {
-        if (isOrbit.value) {
-          controls.value = createOrbitScene(threeContainer, vueComponents);
-        } else {
-          controls.value = createFixedScene(threeContainer, vueComponents);
-        }
+        controls.value = isOrbit.value ? createOrbitScene(threeContainer, vueComponents) : createFixedScene(threeContainer, vueComponents);
       }
     };
 
+    onMounted(initializeScene);
 
-    onMounted(() => {
-    const threeContainer = document.getElementById('three-container');
-    const vueComponents = Array.from(document.querySelectorAll('.vue-component')) as HTMLElement[];
-    if (threeContainer) {
-      if (isOrbit.value) {
-        controls.value = createOrbitScene(threeContainer, vueComponents);
-      } else {
-        controls.value = createFixedScene(threeContainer, vueComponents);
+    onBeforeUnmount(() => {
+      if (controls.value && controls.value.controls) {
+        controls.value.controls.dispose();
       }
-    }
-  });
+    });
 
     return {
-      toggleView,
+      toggleView: () => {
+        const threeContainer = document.getElementById('three-container');
+        const vueComponents = Array.from(document.querySelectorAll('.vue-component')) as HTMLElement[];
+        if (threeContainer) {
+          store.commit('toggleGameMode');
+          if (store.state.gameMode) {
+            createOrbitScene(threeContainer, vueComponents);
+          } else {
+            createFixedScene(threeContainer, vueComponents);
+          }
+        }
+      },
     };
   },
 });

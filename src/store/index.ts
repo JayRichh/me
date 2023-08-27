@@ -1,9 +1,15 @@
 import { createStore } from "vuex";
 
 export default createStore({
-  state: {},
+  state: {
+    gameMode: false,
+  },
   getters: {},
-  mutations: {},
+  mutations: {
+    toggleGameMode(state) {
+      state.gameMode = !state.gameMode;
+    },
+  },
   actions: {},
   modules: {},
 });
