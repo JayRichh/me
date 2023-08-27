@@ -1,38 +1,24 @@
 <template>
-  <div class="projects-container vue-component">
+  <div class="vue-component scene-item projects-card">
     <h1>Projects</h1>
-    <div v-for="project in projects" :key="project.id" class="project-card">
-      <img :src="project.image" alt="Project preview" />
-      <h2>{{ project.title }}</h2>
-      <p>{{ project.description }}</p>
-      <a :href="project.githubLink" target="_blank">View on GitHub</a>
-    </div>
+    <ul>
+      <li v-for="project in projects" :key="project.id">
+        <a :href="project.url" target="_blank">{{ project.name }}</a>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 
-interface Project {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  githubLink: string;
-}
-
 export default defineComponent({
   name: 'ProjectsComponent',
   setup() {
-    const projects = ref<Project[]>([
-      {
-        id: 1,
-        title: 'Project 1',
-        description: 'This is project 1',
-        image: 'path/to/image1.jpg',
-        githubLink: 'https://github.com/project1',
-      },
-      // Add more projects here
+    const projects = ref([
+      { id: 1, name: 'Project 1', url: 'https://example.com/project1' },
+      { id: 2, name: 'Project 2', url: 'https://example.com/project2' },
+      { id: 3, name: 'Project 3', url: 'https://example.com/project3' },
     ]);
 
     return {

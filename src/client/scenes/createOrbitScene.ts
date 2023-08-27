@@ -1,37 +1,29 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import TWEEN from '@tweenjs/tween.js';
-import { io } from 'socket.io-client';
 
-const socket = io();
-
-export const createOrbitScene = (element: HTMLElement, vueComponents: HTMLElement[]) => {
-  socket.emit('changeView', { view: 'fixed' });
+export const createOrbitScene = (container: HTMLElement, vueComponents: HTMLElement[]) => {
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
   const renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  element.appendChild(renderer.domElement);
+  container.appendChild(renderer.domElement);
 
   const controls = new OrbitControls(camera, renderer.domElement);
 
-  camera.position.z = 4;
+  const geometry = new THREE.BoxGeometry();
+  const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  const cube = new THREE.Mesh(geometry, material);
+  scene.add(cube);
 
-  vueComponents.forEach((component) => {
-    const componentTexture = new THREE.CanvasTexture(component);
-    const componentMaterial = new THREE.MeshBasicMaterial({ map: componentTexture });
-    const componentGeometry = new THREE.PlaneGeometry(1, 1);
-    const componentMesh = new THREE.Mesh(componentGeometry, componentMaterial);
-    componentMesh.position.set(0, 1, 0); // Set position
-    scene.add(componentMesh);
-  });
+  camera.position.z = 5;
 
   const animate = () => {
     requestAnimationFrame(animate);
     controls.update();
-    TWEEN.update();
     renderer.render(scene, camera);
   };
 
   animate();
+
+  return { scene, camera, renderer, controls };
 };

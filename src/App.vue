@@ -1,12 +1,7 @@
 <template>
   <div id="app">
-    <nav>
-      <router-link to="/">Home</router-link>
-      <router-link to="/about">About</router-link>
-      <router-link to="/projects">Projects</router-link>
-      <router-link to="/contact">Contact</router-link>
-    </nav>
-    <router-view />
+    <Navbar />
+    <HomeView />
   </div>
 </template>
 
@@ -31,4 +26,31 @@ nav {
     }
   }
 }
+
+.scene-item {
+  position: absolute;
+  width: 300px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateZ(-500px);
+}
+
+.about-card {
+  top: 50px;
+  left: 50px;
+}
+
+.projects-card {
+  top: 50px;
+  right: 50px;
+}
+
+.contact-card {
+  bottom: 50px;
+  left: 50px;
+}
+
 </style>

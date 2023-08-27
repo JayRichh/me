@@ -1,5 +1,5 @@
 <template>
-  <div class="contact-container vue-component">
+  <div class="vue-component scene-item contact-card">
     <h1>Contact Me</h1>
     <form @submit.prevent="submitForm">
       <input type="text" v-model="name" placeholder="Your Name" required />
@@ -23,6 +23,7 @@ export default defineComponent({
     const isFormValid = computed(() => {
       return name.value && email.value && message.value;
     });
+
     const submitForm = () => {
       if (isFormValid.value) {
         console.log(`Name: ${name.value}, Email: ${email.value}, Message: ${message.value}`);

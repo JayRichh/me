@@ -1,5 +1,5 @@
 <template>
-  <div class="about-container vue-component">
+  <div class="vue-component scene-item about-card">
     <h1>About Me</h1>
     <p>This is the about section.</p>
   </div>
@@ -23,15 +23,5 @@ export default defineComponent({
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
-  color: #333;
-  margin-bottom: 16px;
-}
-
-p {
-  color: #666;
-  margin-bottom: 8px;
 }
 </style>

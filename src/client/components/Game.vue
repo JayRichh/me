@@ -1,8 +1,9 @@
 <template>
-  <div class="game-container">
-    <h1>Game Zone</h1>
-    <div id="gameCanvas"></div>
-    <button @click="toggleGameMode">Toggle Game Mode</button>
+  <div id="game-container">
+    <div id="three-container"></div>
+    <button @click="toggleGameMode">
+      <i class="fas fa-toggle-on"></i>
+    </button>
   </div>
 </template>
 
@@ -10,80 +11,67 @@
 import { defineComponent, ref, onMounted } from 'vue';
 import { createOrbitScene } from '../scenes/createOrbitScene';
 import { createFixedScene } from '../scenes/createFixedScene';
-import { toggleGameMode } from '../../helpers/toggleGameMode';
+import { toggleGameMode as toggleGameModeHelper } from '../../helpers/toggleGameMode';
 
 export default defineComponent({
-  name: 'GameComponent',
+  name: 'Game',
   setup() {
     const gameMode = ref(false);
-    
-    const toggle = () => {
-      toggleGameMode();
-    };
 
     const toggleGameMode = () => {
       gameMode.value = !gameMode.value;
-      const gameCanvas = document.getElementById('gameCanvas');
+      const threeContainer = document.getElementById('three-container');
       const vueComponents = Array.from(document.querySelectorAll('.vue-component')) as HTMLElement[];
-      if (gameCanvas) {
+      if (threeContainer) {
         if (gameMode.value) {
-          createOrbitScene(gameCanvas, vueComponents);
+          createOrbitScene(threeContainer, vueComponents);
         } else {
-          createFixedScene(gameCanvas, vueComponents);
+          createFixedScene(threeContainer, vueComponents);
         }
       } else {
-        console.error('gameCanvas element not found');
+        console.error('threeContainer element not found');
       }
     };
 
     onMounted(() => {
-      const gameCanvas = document.getElementById('gameCanvas');
+      const threeContainer = document.getElementById('three-container');
       const vueComponents = Array.from(document.querySelectorAll('.vue-component')) as HTMLElement[];
-      if (gameCanvas) {
-        createFixedScene(gameCanvas, vueComponents);
+      if (threeContainer) {
+        createFixedScene(threeContainer, vueComponents);
       }
     });
 
     return {
       toggleGameMode,
-      toggle,
     };
   },
 });
 </script>
 
 <style scoped>
-.game-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: #f0f0f0;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
-  color: #333;
-  margin-bottom: 16px;
-}
-
-#gameCanvas {
+#game-container {
+  position: relative;
   width: 100%;
-  height: 400px;
-  background-color: #000;
+  height: 100vh;
+}
+
+#three-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 button {
-  padding: 10px 20px;
-  background-color: #333;
-  color: #fff;
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: none;
   border: none;
-  border-radius: 4px;
+  color: white;
+  font-size: 24px;
   cursor: pointer;
 }
-
-button:hover {
-  background-color: #555;
-}
 </style>
+

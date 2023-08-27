@@ -1,88 +1,81 @@
 <template>
   <div id="home-container">
     <div id="three-container"></div>
-    <button @click="toggleView">Toggle View</button>
-    <div id="three-container"></div>
+    <button @click="toggleView">
+      <i class="fas fa-eye"></i>
+    </button>
+    <div class="vue-component scene-item about-card">
+      <AboutComponent />
+    </div>
+    <div class="vue-component scene-item projects-card">
+      <ProjectsComponent />
+    </div>
+    <div class="vue-component scene-item contact-card">
+      <ContactComponent />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
 import * as THREE from 'three';
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { initThreeJS } from '../../helpers/threeHelpers';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { createOrbitScene } from '../scenes/createOrbitScene';
 import { createFixedScene } from '../scenes/createFixedScene';
-import { io } from 'socket.io-client';
+import AboutComponent from './About.vue';
+import ProjectsComponent from './Projects.vue';
+import ContactComponent from './Contact.vue';
 
-const socket = io();
+type ControlsType = {
+  scene: THREE.Scene;
+  camera: THREE.PerspectiveCamera;
+  renderer: THREE.WebGLRenderer;
+  controls: OrbitControls | null; // Ensure this type matches the type returned by the functions
+};
 
 export default defineComponent({
   name: 'HomeView',
+  components: {
+    AboutComponent,
+    ProjectsComponent,
+    ContactComponent,
+  },
   setup() {
-    const scene = ref(new THREE.Scene());
-    const camera = ref(new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000));
-    const renderer = ref(new THREE.WebGLRenderer());
-    const controls = ref(new OrbitControls(camera.value, renderer.value.domElement));
-    const clientCubes = ref<{ [id: string]: THREE.Mesh }>({});
     const isOrbit = ref(false);
-
-    onMounted(async () => {
-      initThreeJS(scene.value, clientCubes.value);
-      const threeContainer = document.getElementById('three-container');
-      if (!threeContainer) throw new Error("Failed to get the three-container element");
-      renderer.value.setSize(threeContainer.clientWidth, threeContainer.clientHeight);
-      threeContainer.appendChild(renderer.value.domElement);
-      
-      // Import Vue components
-      const AboutComponent = (await import('../components/About.vue')).default;
-      const ContactComponent = (await import('../components/Contact.vue')).default;
-      const ProjectsComponent = (await import('../components/Projects.vue')).default;
-      const vueComponents = [AboutComponent, ContactComponent, ProjectsComponent];
-      renderScene();
-      window.addEventListener("resize", onWindowResize, false);
+    const controls = ref<ControlsType>({
+      scene: new THREE.Scene(),
+      camera: new THREE.PerspectiveCamera(),
+      renderer: new THREE.WebGLRenderer(),
+      controls: null,
     });
 
-    const onWindowResize = () => {
-      camera.value.aspect = window.innerWidth / window.innerHeight;
-      camera.value.updateProjectionMatrix();
-      renderer.value.setSize(window.innerWidth, window.innerHeight);
-      render();
-    };
-
-    const render = () => {
-      renderer.value.render(scene.value, camera.value);
-    };
-
-    const renderScene = async () => {
+    const toggleView = () => {
+      isOrbit.value = !isOrbit.value;
       const threeContainer = document.getElementById('three-container');
-      if (!threeContainer) throw new Error("Failed to get the three-container element");
-      // Import Vue components
-      const AboutComponent = (await import('../components/About.vue')).default;
-      const ContactComponent = (await import('../components/Contact.vue')).default;
-      const ProjectsComponent = (await import('../components/Projects.vue')).default;
-      const vueComponents = [AboutComponent, ContactComponent, ProjectsComponent];
-      if (isOrbit.value) {
-        createOrbitScene(threeContainer, vueComponents.map(component => component.$el));
-      } else {
-        createFixedScene(threeContainer, vueComponents.map(component => component.$el));
+      const vueComponents = Array.from(document.querySelectorAll('.vue-component')) as HTMLElement[];
+      if (threeContainer) {
+        if (isOrbit.value) {
+          controls.value = createOrbitScene(threeContainer, vueComponents);
+        } else {
+          controls.value = createFixedScene(threeContainer, vueComponents);
+        }
       }
     };
 
-    const toggleView = () => {
-    isOrbit.value = !isOrbit.value;
-    socket.emit('toggleView', { view: isOrbit.value ? 'orbit' : 'fixed' });
-    renderScene();
-    };
+
+    onMounted(() => {
+    const threeContainer = document.getElementById('three-container');
+    const vueComponents = Array.from(document.querySelectorAll('.vue-component')) as HTMLElement[];
+    if (threeContainer) {
+      if (isOrbit.value) {
+        controls.value = createOrbitScene(threeContainer, vueComponents);
+      } else {
+        controls.value = createFixedScene(threeContainer, vueComponents);
+      }
+    }
+  });
 
     return {
-      scene,
-      camera,
-      renderer,
-      controls,
-      onWindowResize,
-      render,
-      renderScene,
       toggleView,
     };
   },
@@ -90,35 +83,54 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.home-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: #f0f0f0;
+#home-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+#three-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+button {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.vue-component {
+  position: absolute;
+  width: 300px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
   padding: 20px;
-  border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
-  color: #333;
-  margin-bottom: 16px;
+#about-card {
+  top: 50px;
+  left: 50px;
 }
 
-p {
-  color: #666;
-  margin-bottom: 8px;
+#projects-card {
+  top: 50px;
+  right: 50px;
 }
 
-.scroll-icon {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.fas {
-  font-size: 24px;
-  margin-top: 8px;
+#contact-card {
+  bottom: 50px;
+  left: 50px;
 }
 </style>
+

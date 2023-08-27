@@ -1,39 +1,36 @@
+import { ref, Ref } from 'vue';
 import * as THREE from 'three';
-import { io } from 'socket.io-client';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-const socket = io();
+interface Controls {
+  scene: THREE.Scene;
+  camera: THREE.PerspectiveCamera;
+  renderer: THREE.WebGLRenderer;
+  controls: OrbitControls | null;
+}
 
-export const createFixedScene = (element: HTMLElement, vueComponents: HTMLElement[]) => {
-  socket.emit('changeView', { view: 'orbit' });
-
+export const createFixedScene = (container: HTMLElement, vueComponents: HTMLElement[]): Controls => {
   const scene = new THREE.Scene();
-  const camera = new THREE.OrthographicCamera(
-    window.innerWidth / -2,
-    window.innerWidth / 2,
-    window.innerHeight / 2,
-    window.innerHeight / -2,
-    1,
-    1000
-  );
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
   const renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  element.appendChild(renderer.domElement);
+  container.appendChild(renderer.domElement);
+  const geometry = new THREE.BoxGeometry();
+  const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  const cube = new THREE.Mesh(geometry, material);
 
-  camera.position.z = 4;
+  scene.add(cube);
 
-  vueComponents.forEach((component) => {
-    const componentTexture = new THREE.CanvasTexture(component);
-    const componentMaterial = new THREE.MeshBasicMaterial({ map: componentTexture });
-    const componentGeometry = new THREE.PlaneGeometry(1, 1);
-    const componentMesh = new THREE.Mesh(componentGeometry, componentMaterial);
-    componentMesh.position.set(0, 1, 0); // Set position
-    scene.add(componentMesh);
-  });
+  camera.position.z = 5;
 
   const animate = () => {
     requestAnimationFrame(animate);
+    cube.rotation.x += 0.01;
+    cube.rotation.y += 0.01;
     renderer.render(scene, camera);
   };
 
   animate();
+
+  return { scene, camera, renderer, controls: null };
 };
