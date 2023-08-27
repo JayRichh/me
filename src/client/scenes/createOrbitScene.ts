@@ -22,6 +22,7 @@ export const createOrbitScene = (element: HTMLElement, vueComponents: HTMLElemen
     const componentMaterial = new THREE.MeshBasicMaterial({ map: componentTexture });
     const componentGeometry = new THREE.PlaneGeometry(1, 1);
     const componentMesh = new THREE.Mesh(componentGeometry, componentMaterial);
+    componentMesh.position.set(0, 1, 0); // Set position
     scene.add(componentMesh);
   });
 

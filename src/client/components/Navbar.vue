@@ -26,6 +26,7 @@
 import { defineComponent, ref } from 'vue';
 import { createOrbitScene } from '../scenes/createOrbitScene';
 import { createFixedScene } from '../scenes/createFixedScene';
+import { toggleGameMode } from '../../helpers/toggleGameMode';
 import { io } from 'socket.io-client';
 
 const socket = io();
@@ -34,6 +35,9 @@ export default defineComponent({
   name: 'NavbarComponent',
   setup() {
     const gameMode = ref(false);
+    const toggle = () => {
+      toggleGameMode();
+    };
 
     const toggleGameMode = () => {
     gameMode.value = !gameMode.value;

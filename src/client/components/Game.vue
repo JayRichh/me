@@ -10,11 +10,16 @@
 import { defineComponent, ref, onMounted } from 'vue';
 import { createOrbitScene } from '../scenes/createOrbitScene';
 import { createFixedScene } from '../scenes/createFixedScene';
+import { toggleGameMode } from '../../helpers/toggleGameMode';
 
 export default defineComponent({
   name: 'GameComponent',
   setup() {
     const gameMode = ref(false);
+    
+    const toggle = () => {
+      toggleGameMode();
+    };
 
     const toggleGameMode = () => {
       gameMode.value = !gameMode.value;
@@ -41,6 +46,7 @@ export default defineComponent({
 
     return {
       toggleGameMode,
+      toggle,
     };
   },
 });
