@@ -1,6 +1,11 @@
 import * as THREE from 'three';
+import { io } from 'socket.io-client';
+
+const socket = io();
 
 export const createFixedScene = (element: HTMLElement, vueComponents: HTMLElement[]) => {
+  socket.emit('changeView', { view: 'orbit' });
+
   const scene = new THREE.Scene();
   const camera = new THREE.OrthographicCamera(
     window.innerWidth / -2,

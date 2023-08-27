@@ -26,6 +26,9 @@
 import { defineComponent, ref } from 'vue';
 import { createOrbitScene } from '../scenes/createOrbitScene';
 import { createFixedScene } from '../scenes/createFixedScene';
+import { io } from 'socket.io-client';
+
+const socket = io();
 
 export default defineComponent({
   name: 'NavbarComponent',
@@ -33,7 +36,8 @@ export default defineComponent({
     const gameMode = ref(false);
 
     const toggleGameMode = () => {
-      gameMode.value = !gameMode.value;
+    gameMode.value = !gameMode.value;
+    socket.emit('toggleGameMode', { mode: gameMode.value ? 'orbit' : 'fixed' });
       const vueComponents = Array.from(document.querySelectorAll('.vue-component')) as HTMLElement[];
       if (gameMode.value) {
         createOrbitScene(document.body, vueComponents);

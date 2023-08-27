@@ -13,6 +13,9 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { initThreeJS } from '../../helpers/threeHelpers';
 import { createOrbitScene } from '../scenes/createOrbitScene';
 import { createFixedScene } from '../scenes/createFixedScene';
+import { io } from 'socket.io-client';
+
+const socket = io();
 
 export default defineComponent({
   name: 'HomeView',
@@ -67,8 +70,9 @@ export default defineComponent({
     };
 
     const toggleView = () => {
-      isOrbit.value = !isOrbit.value;
-      renderScene();
+    isOrbit.value = !isOrbit.value;
+    socket.emit('toggleView', { view: isOrbit.value ? 'orbit' : 'fixed' });
+    renderScene();
     };
 
     return {
@@ -85,7 +89,7 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
 .home-container {
   display: flex;
   flex-direction: column;

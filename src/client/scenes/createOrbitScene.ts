@@ -1,8 +1,12 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import TWEEN from '@tweenjs/tween.js';
+import { io } from 'socket.io-client';
+
+const socket = io();
 
 export const createOrbitScene = (element: HTMLElement, vueComponents: HTMLElement[]) => {
+  socket.emit('changeView', { view: 'fixed' });
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
   const renderer = new THREE.WebGLRenderer();
