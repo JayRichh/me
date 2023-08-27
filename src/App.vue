@@ -9,6 +9,8 @@
 import { defineComponent, onMounted, nextTick } from 'vue';
 import Navbar from '@/client/components/Navbar.vue';
 import { useStore } from 'vuex';
+import { useRoute } from 'vue-router';
+import { toggleAndInitializeScene } from './helpers/gameUtils';
 
 export default defineComponent({
   name: 'App',
@@ -17,23 +19,41 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
+    const route = useRoute();
+    const focusItem = (route.name || 'home').toString();
+
     onMounted(() => {
-  nextTick(() => {
-    const hudElement = document.getElementById('navbar-hud');
-    if (hudElement) {
-      store.commit('setHUD', hudElement);
-    }
-  });
-});
+      nextTick(() => {
+        const threeContainer = document.getElementById('three-container');
+        const vueComponents = Array.from(document.querySelectorAll('.vue-component')) as HTMLElement[];
+        if (threeContainer && vueComponents.length > 0) {
+          store.commit('setGameMode', toggleAndInitializeScene(store.state.gameMode, threeContainer, vueComponents, focusItem));
+        }
+      });
+    });
   },
 });
 </script>
+Save to grepper
+gameUtils.ts
+No changes are needed here since it already accommodates the new focusItem parameter.
+
+createFixedScene.ts
+No changes are needed here either, as it already includes the logic for adjusting the camera based on the focusItem.
+
+With these changes, the HUD will be created and managed in Navbar.vue, and the scene will be initialized in App.vue. The helper methods in gameUtils.ts will be used for toggling and initializing the scene, ensuring DRY (Don't Repeat Yourself) methodology.
+
+Would you like to proceed with the next steps?
+
+
+
+
+
+
 
 <style lang="scss">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
 }

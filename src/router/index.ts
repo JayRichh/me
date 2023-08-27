@@ -1,37 +1,35 @@
-import { createRouter, createWebHashHistory } from "vue-router";
-import type { RouteRecordRaw } from "vue-router";
-import HomeView from '../client/components/HomeView.vue';
-import AboutView from '../client/components/About.vue'
-import ProjectsView from '../client/components/Projects.vue'
-import ContactView from '../client/components/Contact.vue'
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import HomeView from '@/client/components/HomeView.vue';
+import About from '@/client/components/About.vue';
+import Projects from '@/client/components/Projects.vue';
+import Contact from '@/client/components/Contact.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    name: 'Home',
-    component: HomeView
+    name: 'home',
+    component: HomeView,
   },
   {
     path: '/about',
-    name: 'About',
-    component: AboutView
+    name: 'about',
+    component: About,
   },
   {
     path: '/projects',
-    name: 'Projects',
-    component: ProjectsView
+    name: 'projects',
+    component: Projects,
   },
   {
     path: '/contact',
-    name: 'Contact',
-    component: ContactView
+    name: 'contact',
+    component: Contact,
   },
-]
+];
 
 const router = createRouter({
-  history: createWebHashHistory(process.env.BASE_URL),
-  routes
-})
+  history: createWebHistory(process.env.BASE_URL),
+  routes,
+});
 
-
-export default router
+export default router;

@@ -18,57 +18,48 @@
   </div>
 </template>
 
-
 <script lang="ts">
 import { defineComponent, onBeforeUnmount, ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { useStore } from 'vuex';
-import {CSS3DRenderer, CSS3DSprite, CSS3DObject} from 'three-css3d';
-import router from '@/router';
-import { toggleAndInitializeScene } from '@/helpers/gameUtils';
-
-type ControlsType = {
-  scene: THREE.Scene;
-  camera: THREE.PerspectiveCamera;
-  renderer: THREE.WebGLRenderer;
-  controls: OrbitControls | null;
-};
+import { toggleAndInitializeScene } from '../../helpers/gameUtils';
 
 export default defineComponent({
   name: 'Navbar',
   setup() {
     const store = useStore();
-    const hudElement = ref<HTMLElement | null>(null);
+    const router = useRouter();
 
-    const createHUD = (hudElement: HTMLElement) => {
-      const hud = new CSS3DObject(hudElement);
-      return hud;
+    const toggleGameMode = () => {
+      store.commit('toggleGameMode');
+      
+    };
+
+    const navigateTo = (route: string) => {
+      router.push({ name: route });
     };
 
     onMounted(() => {
-      hudElement.value = document.getElementById('navbar-hud');
-      if (hudElement.value) {
-        const hud = createHUD(hudElement.value);
-        store.commit('setHUD', hud);
+      const hudElement = document.getElementById('navbar-hud');
+      if (hudElement) {
+        store.commit('setHUD', hudElement);
       }
     });
 
     return {
-      toggleGameMode: () => {
-        const threeContainer = document.getElementById('three-container');
-        const vueComponents = Array.from(document.querySelectorAll('.vue-component')) as HTMLElement[];
-        if (threeContainer) {
-          store.commit('toggleGameMode');
-          toggleAndInitializeScene(store.state.gameMode, threeContainer, vueComponents);
-        }
-      },
-      navigateTo: (route: string) => {
-        router.push({ name: route });
-      }
+      toggleGameMode,
+      navigateTo,
     };
   },
 });
-
 </script>
+
+<style scoped>
+.hud-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+</style>

@@ -7,7 +7,7 @@ export default createStore({
   },
   getters: {},
   mutations: {
-    toggleGameMode(state) {
+    toggleControlsMode(state) {
       state.gameMode = !state.gameMode;
     },
     setHUD(state, hud) {
