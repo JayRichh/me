@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import TWEEN from "@tweenjs/tween.js";
 import { eventsEmitter } from '../client/sockets/socketClient';
+import { CSS3DObject } from 'three-css3d';
 
 interface ClientData {
   p?: { x: number; y: number; z: number };
@@ -10,11 +11,14 @@ interface ClientData {
 let removeClientListener: ((id: string) => void) | null = null;
 let updateClientsListener: ((clients: Record<string, ClientData>) => void) | null = null;
 
-export const initThreeJS = (scene: THREE.Scene, clientCubes: Record<string, THREE.Mesh>) => {
+export const initThreeJS = (scene: THREE.Scene, clientCubes: Record<string, THREE.Mesh>, hudElement: HTMLElement) => {
   const gridHelper = new THREE.GridHelper(10, 10);
   gridHelper.position.y = -0.5;
   scene.add(gridHelper);
 
+  const hud = new CSS3DObject(hudElement);
+  scene.add(hud);
+  
   eventsEmitter.on("removeClient", (id: string) => {
     const cube = clientCubes[id];
     if (cube) {

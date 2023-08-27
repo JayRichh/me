@@ -4,7 +4,6 @@ import HomeView from '../client/components/HomeView.vue';
 import AboutView from '../client/components/About.vue'
 import ProjectsView from '../client/components/Projects.vue'
 import ContactView from '../client/components/Contact.vue'
-import GameView from '../client/components/Game.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -27,11 +26,6 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Contact',
     component: ContactView
   },
-  {
-    path: '/game',
-    name: 'Game',
-    component: GameView
-  }
 ]
 
 const router = createRouter({

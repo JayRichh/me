@@ -18,12 +18,16 @@
   </div>
 </template>
 
+
 <script lang="ts">
-import { defineComponent, onBeforeUnmount, ref, computed } from 'vue';
+import { defineComponent, onBeforeUnmount, ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { useStore } from 'vuex';
+import {CSS3DRenderer, CSS3DSprite, CSS3DObject} from 'three-css3d';
+import router from '@/router';
+import { toggleAndInitializeScene } from '@/helpers/gameUtils';
 
 type ControlsType = {
   scene: THREE.Scene;
@@ -36,28 +40,35 @@ export default defineComponent({
   name: 'Navbar',
   setup() {
     const store = useStore();
-    const gameMode = computed(() => store.state.gameMode);
-    const router = useRouter();
+    const hudElement = ref<HTMLElement | null>(null);
 
-    const navigateTo = (route: string) => {
-      router.push({ name: route });
+    const createHUD = (hudElement: HTMLElement) => {
+      const hud = new CSS3DObject(hudElement);
+      return hud;
     };
 
-    const toggleGameMode = () => {
-      store.commit('toggleGameMode');
-    };
-
-    onBeforeUnmount(() => {
-      if (gameMode.value && gameMode.value.controls) {
-        gameMode.value.controls.dispose();
+    onMounted(() => {
+      hudElement.value = document.getElementById('navbar-hud');
+      if (hudElement.value) {
+        const hud = createHUD(hudElement.value);
+        store.commit('setHUD', hud);
       }
     });
 
     return {
-      gameMode,
-      navigateTo,
-      toggleGameMode
+      toggleGameMode: () => {
+        const threeContainer = document.getElementById('three-container');
+        const vueComponents = Array.from(document.querySelectorAll('.vue-component')) as HTMLElement[];
+        if (threeContainer) {
+          store.commit('toggleGameMode');
+          toggleAndInitializeScene(store.state.gameMode, threeContainer, vueComponents);
+        }
+      },
+      navigateTo: (route: string) => {
+        router.push({ name: route });
+      }
     };
   },
 });
+
 </script>

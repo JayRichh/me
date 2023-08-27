@@ -1,9 +1,33 @@
 <template>
   <div id="app">
     <Navbar />
-    <HomeView />
+    <router-view />
   </div>
 </template>
+
+<script lang="ts">
+import { defineComponent, onMounted, nextTick } from 'vue';
+import Navbar from '@/client/components/Navbar.vue';
+import { useStore } from 'vuex';
+
+export default defineComponent({
+  name: 'App',
+  components: {
+    Navbar,
+  },
+  setup() {
+    const store = useStore();
+    onMounted(() => {
+  nextTick(() => {
+    const hudElement = document.getElementById('navbar-hud');
+    if (hudElement) {
+      store.commit('setHUD', hudElement);
+    }
+  });
+});
+  },
+});
+</script>
 
 <style lang="scss">
 #app {

@@ -17,55 +17,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, onBeforeUnmount } from 'vue';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { createOrbitScene } from '../scenes/createOrbitScene';
-import { createFixedScene } from '../scenes/createFixedScene';
-import AboutComponent from './About.vue';
-import ProjectsComponent from './Projects.vue';
-import ContactComponent from './Contact.vue';
-import { toggleGameMode } from '../../helpers/gameUtils';
+import { defineComponent, onMounted, ref } from 'vue';
+import { toggleAndInitializeScene } from '../../helpers/gameUtils';
 import { useStore } from 'vuex';
-
-type ControlsType = {
-  scene: THREE.Scene;
-  camera: THREE.PerspectiveCamera;
-  renderer: THREE.WebGLRenderer;
-  controls: OrbitControls | null;
-};
 
 export default defineComponent({
   name: 'HomeView',
-  components: {
-    AboutComponent,
-    ProjectsComponent,
-    ContactComponent,
-  },
   setup() {
     const store = useStore();
-    const isOrbit = ref(false);
-    const controls = ref<ControlsType>({
-      scene: new THREE.Scene(),
-      camera: new THREE.PerspectiveCamera(),
-      renderer: new THREE.WebGLRenderer(),
-      controls: null,
-    });
-    const gameMode = ref(false);
-
-    const initializeScene = () => {
+    onMounted(() => {
       const threeContainer = document.getElementById('three-container');
       const vueComponents = Array.from(document.querySelectorAll('.vue-component')) as HTMLElement[];
       if (threeContainer) {
-        controls.value = isOrbit.value ? createOrbitScene(threeContainer, vueComponents) : createFixedScene(threeContainer, vueComponents);
-      }
-    };
-
-    onMounted(initializeScene);
-
-    onBeforeUnmount(() => {
-      if (controls.value && controls.value.controls) {
-        controls.value.controls.dispose();
+        toggleAndInitializeScene(store.state.gameMode, threeContainer, vueComponents);
       }
     });
 
@@ -75,11 +39,7 @@ export default defineComponent({
         const vueComponents = Array.from(document.querySelectorAll('.vue-component')) as HTMLElement[];
         if (threeContainer) {
           store.commit('toggleGameMode');
-          if (store.state.gameMode) {
-            createOrbitScene(threeContainer, vueComponents);
-          } else {
-            createFixedScene(threeContainer, vueComponents);
-          }
+          toggleAndInitializeScene(store.state.gameMode, threeContainer, vueComponents);
         }
       },
     };
