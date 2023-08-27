@@ -1,5 +1,5 @@
 <template>
-  <div class="contact-container">
+  <div class="contact-container vue-component">
     <h1>Contact Me</h1>
     <form @submit.prevent="submitForm">
       <input type="text" v-model="name" placeholder="Your Name" required />

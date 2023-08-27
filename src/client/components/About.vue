@@ -1,9 +1,7 @@
 <template>
-  <div class="about-container">
+  <div class="about-container vue-component">
     <h1>About Me</h1>
-    <p>developer.</p>
-    <p>Based in here</p>
-    <p>Skills: </p>
+    <p>This is the about section.</p>
   </div>
 </template>
 

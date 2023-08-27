@@ -7,94 +7,37 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, onBeforeUnmount } from 'vue';
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import Stats from "three/examples/jsm/libs/stats.module";
-import { GUI } from "dat.gui";
-import TWEEN from "@tweenjs/tween.js";
-import { socket, eventsEmitter } from '../sockets/socketClient';
-import { initThreeJS } from '../../helpers/threeHelpers';
+import { defineComponent, ref, onMounted } from 'vue';
+import { createOrbitScene } from '../scenes/createOrbitScene';
+import { createFixedScene } from '../scenes/createFixedScene';
 
 export default defineComponent({
   name: 'GameComponent',
   setup() {
-    const scene = ref(new THREE.Scene());
-    const camera = ref(new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000));
-    const renderer = ref(new THREE.WebGLRenderer());
-    const controls = ref(new OrbitControls(camera.value, renderer.value.domElement));
-    const clientCubes = ref<{ [id: string]: THREE.Mesh }>({});
-    const stats = new Stats();
-    const gui = new GUI();
-
     const gameMode = ref(false);
-
-    camera.value.position.z = 4;
 
     const toggleGameMode = () => {
       gameMode.value = !gameMode.value;
-    };
-
-    // GUI setup
-    const cubeFolder = gui.addFolder("Cube");
-    const cubePositionFolder = cubeFolder.addFolder("Position");
-    cubePositionFolder.add(camera.value.position, "x", -5, 5);
-    cubePositionFolder.add(camera.value.position, "z", -5, 5);
-    cubePositionFolder.open();
-
-    // Event listeners
-    window.addEventListener("resize", onWindowResize, false);
-
-    function onWindowResize() {
-      camera.value.aspect = window.innerWidth / window.innerHeight;
-      camera.value.updateProjectionMatrix();
-      renderer.value.setSize(window.innerWidth, window.innerHeight);
-      render();
-    }
-
-    const animate = () => {
-      requestAnimationFrame(animate);
-      controls.value.update();
-      TWEEN.update();
-      render();
-      stats.update();
-    };
-
-    // Render function
-    const render = () => {
-      renderer.value.render(scene.value, camera.value);
+      const gameCanvas = document.getElementById('gameCanvas');
+      const vueComponents = Array.from(document.querySelectorAll('.vue-component')) as HTMLElement[];
+      if (gameCanvas) {
+        if (gameMode.value) {
+          createOrbitScene(gameCanvas, vueComponents);
+        } else {
+          createFixedScene(gameCanvas, vueComponents);
+        }
+      } else {
+        console.error('gameCanvas element not found');
+      }
     };
 
     onMounted(() => {
-      initThreeJS(scene.value, clientCubes.value);
       const gameCanvas = document.getElementById('gameCanvas');
+      const vueComponents = Array.from(document.querySelectorAll('.vue-component')) as HTMLElement[];
       if (gameCanvas) {
-        renderer.value.setSize(gameCanvas.clientWidth, gameCanvas.clientHeight);
-        gameCanvas.appendChild(renderer.value.domElement);
+        createFixedScene(gameCanvas, vueComponents);
       }
-      eventsEmitter.on("removeClient", id => {
-        const objectToRemove = scene.value.getObjectByName(id);
-        if (objectToRemove) {
-          scene.value.remove(objectToRemove);
-        }
-      });
-      animate();
     });
-
-    onBeforeUnmount(() => {
-      eventsEmitter.off("removeClient", removeClient);
-    });
-
-    const removeClient = (...args: any[]) => {
-      const id = args[0];
-      if (typeof id !== 'string') {
-        throw new Error('Expected first argument to be a string');
-      }
-      if (clientCubes.value[id]) {
-        scene.value.remove(clientCubes.value[id]);
-        delete clientCubes.value[id];
-      }
-    };
 
     return {
       toggleGameMode,

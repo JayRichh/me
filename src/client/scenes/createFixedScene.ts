@@ -1,27 +1,33 @@
 import * as THREE from 'three';
-import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer';
-import { createOrbitScene } from './createOrbitScene';
 
 export const createFixedScene = (element: HTMLElement, vueComponents: HTMLElement[]) => {
-  const renderer = new CSS3DRenderer();
-  // Initialize your Three.js scene
-  // ...
+  const scene = new THREE.Scene();
+  const camera = new THREE.OrthographicCamera(
+    window.innerWidth / -2,
+    window.innerWidth / 2,
+    window.innerHeight / 2,
+    window.innerHeight / -2,
+    1,
+    1000
+  );
+  const renderer = new THREE.WebGLRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  element.appendChild(renderer.domElement);
+
+  camera.position.z = 4;
 
   vueComponents.forEach((component) => {
-    const cssObject = new CSS3DObject(component);
-    // Position and rotate your cssObject as needed
-    // scene.add(cssObject);
-    
+    const componentTexture = new THREE.CanvasTexture(component);
+    const componentMaterial = new THREE.MeshBasicMaterial({ map: componentTexture });
+    const componentGeometry = new THREE.PlaneGeometry(1, 1);
+    const componentMesh = new THREE.Mesh(componentGeometry, componentMaterial);
+    scene.add(componentMesh);
   });
-  
-  // Your render loop or animation
-};
 
-export const toggleScene = (isOrbit: boolean, element: HTMLElement, vueComponents: HTMLElement[]) => {
-  if (isOrbit) {
-    createOrbitScene(element, vueComponents);
-  } else {
-    createFixedScene(element, vueComponents);
-  }
-};
+  const animate = () => {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+  };
 
+  animate();
+};

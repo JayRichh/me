@@ -1,5 +1,5 @@
 <template>
-  <div class="projects-container">
+  <div class="projects-container vue-component">
     <h1>Projects</h1>
     <div v-for="project in projects" :key="project.id" class="project-card">
       <img :src="project.image" alt="Project preview" />
