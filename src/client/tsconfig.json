@@ -17,7 +17,7 @@
             ],
             "@/*": [
                 "src/*"
-              ],
+            ],
         },
         "noImplicitAny": false,
         "noUnusedLocals": false,

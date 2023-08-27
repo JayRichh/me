@@ -1,13 +1,13 @@
 import { io, Socket } from "socket.io-client";
 import * as THREE from "three";
-import { EventEmitter } from 'events';
+import { EventEmitter } from "events";
 import TWEEN from "@tweenjs/tween.js";
 
 const UPDATE_INTERVAL = 50;
 const socket: Socket = io();
 const myObject3D = new THREE.Object3D();
 const clientCubes: { [id: string]: THREE.Mesh } = {};
-let myId: string = "";
+let myId = "";
 const eventsEmitter = new EventEmitter();
 
 socket.on("connect", () => {
@@ -24,7 +24,14 @@ socket.on("id", (id: string) => {
 });
 
 socket.on("clients", (clients: Record<string, any>) => {
-  updateClients(clients);
+  const hudElement = document.getElementById("hud-element") as HTMLElement;
+  const homeViewElement = document.getElementById(
+    "home-view-element"
+  ) as HTMLElement;
+  if (!hudElement || !homeViewElement) {
+    return;
+  }
+  updateClients(clients, hudElement, homeViewElement);
 });
 
 socket.on("removeClient", (id: string) => {
@@ -39,14 +46,19 @@ const emitUpdate = () => {
   });
 };
 
-const updateClients = (clients: Record<string, any>) => {
+const updateClients = (
+  clients: Record<string, any>,
+  hudElement: HTMLElement,
+  homeViewElement: HTMLElement
+) => {
   let pingStatsHtml = "Socket Ping Stats<br/><br/>";
   Object.keys(clients).forEach((id) => {
     const timestamp = Date.now();
     pingStatsHtml += `${id} ${timestamp - clients[id].t}ms<br/>`;
     updateClientCube(id, clients[id]);
   });
-  (document.getElementById("pingStats") as HTMLDivElement).innerHTML = pingStatsHtml;
+  (document.getElementById("pingStats") as HTMLDivElement).innerHTML =
+    pingStatsHtml;
 };
 
 const updateClientCube = (id: string, clientData: any) => {
@@ -84,8 +96,24 @@ const updateClientCube = (id: string, clientData: any) => {
   }
 };
 
-export const updateClientsListener = (callback: (clients: Record<string, any>) => void) => {
-  socket.on("clients", callback);
+export const updateClientsListener = (
+  callback: (
+    clients: Record<string, any>,
+    hudElement: HTMLElement,
+    homeViewElement: HTMLElement
+  ) => void
+) => {
+  socket.on("clients", (clients: Record<string, any>) => {
+    const hudElement = document.getElementById("hud-element") as HTMLElement;
+    const homeViewElement = document.getElementById(
+      "home-view-element"
+    ) as HTMLElement;
+    if (!hudElement || !homeViewElement) {
+      return;
+    }
+
+    callback(clients, hudElement, homeViewElement);
+  });
 
   return () => {
     socket.off("clients", callback);

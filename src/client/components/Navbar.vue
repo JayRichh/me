@@ -19,20 +19,43 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeUnmount, ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { useStore } from 'vuex';
-import { toggleAndInitializeScene } from '../../helpers/gameUtils';
+import {
+  defineComponent,
+  onBeforeUnmount,
+  ref,
+  computed,
+  onMounted,
+} from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { toggleAndInitializeScene } from "../../helpers/gameUtils";
+
+type FocusItem = "about" | "projects" | "contact" | "default";
 
 export default defineComponent({
-  name: 'Navbar',
+  name: "Navbar",
   setup() {
-    const store = useStore();
     const router = useRouter();
+    const store = useStore();
+    let focusItem = computed(() =>
+      (router.currentRoute.value.name || "home").toString()
+    ) as any;
 
     const toggleGameMode = () => {
-      store.commit('toggleGameMode');
-      
+      store.commit("toggleGameMode");
+      const threeContainer = document.getElementById("three-container");
+      const vueComponents = Array.from(
+        document.querySelectorAll(".vue-component")
+      ) as HTMLElement[];
+      if (threeContainer && vueComponents.length > 0) {
+        toggleAndInitializeScene(store.state.gameMode, {
+          container: threeContainer,
+          vueComponents,
+          clientCubes: {},
+          hudElement: null,
+          focusItem: focusItem as FocusItem,
+        });
+      }
     };
 
     const navigateTo = (route: string) => {
@@ -40,9 +63,9 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      const hudElement = document.getElementById('navbar-hud');
+      const hudElement = document.getElementById("navbar-hud");
       if (hudElement) {
-        store.commit('setHUD', hudElement);
+        store.commit("setHUD", hudElement);
       }
     });
 

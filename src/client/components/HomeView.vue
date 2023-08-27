@@ -13,29 +13,42 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, watch } from 'vue';
-import { useStore } from 'vuex';
-import { useRoute } from 'vue-router';
-import { setFixedView } from '../scenes/createFixedScene';
-import { toggleAndInitializeScene } from '../../helpers/gameUtils';
+import { defineComponent, onMounted, ref, watch } from "vue";
+import { useStore } from "vuex";
+import { useRoute } from "vue-router";
+import { setFixedView } from "../scenes/createFixedScene";
+import { toggleAndInitializeScene } from "../../helpers/gameUtils";
+import AboutComponent from "./About.vue";
+import ProjectsComponent from "./Projects.vue";
+import ContactComponent from "./Contact.vue";
+
+type FocusItem = "about" | "projects" | "contact" | "default";
 
 export default defineComponent({
-  name: 'HomeView',
+  name: "HomeView",
   setup() {
     let store = useStore();
     let route = useRoute();
-    let focusItem = ref(route.name || 'home').toString();
+    let focusItem = ref(route.name || "home").toString() || "home";
 
     watch(route, (newRoute) => {
-      focusItem = (newRoute.name as any) || 'home';
+      focusItem = (newRoute.name as any) || "home";
       adjustScene();
     });
 
     const adjustScene = () => {
-      const threeContainer = document.getElementById('three-container');
-      const vueComponents = Array.from(document.querySelectorAll('.vue-component')) as HTMLElement[];
+      const threeContainer = document.getElementById("three-container");
+      const vueComponents = Array.from(
+        document.querySelectorAll(".vue-component")
+      ) as HTMLElement[];
       if (threeContainer && vueComponents.length > 0) {
-        setFixedView(threeContainer, vueComponents, focusItem);
+        toggleAndInitializeScene(store.state.gameMode, {
+          container: threeContainer,
+          vueComponents,
+          clientCubes: {},
+          hudElement: null,
+          focusItem: focusItem as FocusItem,
+        });
       }
     };
 
@@ -45,15 +58,23 @@ export default defineComponent({
 
     return {
       toggleView: () => {
-        const threeContainer = document.getElementById('three-container');
-        const vueComponents = Array.from(document.querySelectorAll('.vue-component')) as HTMLElement[];
-        if (threeContainer) {
-          store.commit('toggleGameMode');
-          toggleAndInitializeScene(store.state.gameMode, threeContainer, vueComponents, focusItem);
+        store.commit("toggleGameMode");
+        const threeContainer = document.getElementById("three-container");
+        const vueComponents = Array.from(
+          document.querySelectorAll(".vue-component")
+        ) as HTMLElement[];
+        if (threeContainer && vueComponents.length > 0) {
+          toggleAndInitializeScene(store.state.gameMode, {
+            container: threeContainer,
+            vueComponents,
+            clientCubes: {},
+            hudElement: null,
+            focusItem: focusItem as FocusItem,
+          });
         }
       },
       toggleControls: () => {
-        store.commit('toggleControlsMode');
+        store.commit("toggleControlsMode");
         adjustScene();
       },
     };
@@ -112,4 +133,3 @@ button {
   left: 50px;
 }
 </style>
-

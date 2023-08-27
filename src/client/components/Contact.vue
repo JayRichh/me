@@ -4,21 +4,25 @@
     <form @submit.prevent="submitForm">
       <input type="text" v-model="name" placeholder="Your Name" required />
       <input type="email" v-model="email" placeholder="Your Email" required />
-      <textarea v-model="message" placeholder="Your Message" required></textarea>
+      <textarea
+        v-model="message"
+        placeholder="Your Message"
+        required
+      ></textarea>
       <button type="submit">Send</button>
     </form>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue';
+import { defineComponent, ref, computed } from "vue";
 
 export default defineComponent({
-  name: 'ContactComponent',
+  name: "ContactComponent",
   setup() {
-    const name = ref('');
-    const email = ref('');
-    const message = ref('');
+    const name = ref("");
+    const email = ref("");
+    const message = ref("");
 
     const isFormValid = computed(() => {
       return name.value && email.value && message.value;
@@ -26,7 +30,9 @@ export default defineComponent({
 
     const submitForm = () => {
       if (isFormValid.value) {
-        console.log(`Name: ${name.value}, Email: ${email.value}, Message: ${message.value}`);
+        console.log(
+          `Name: ${name.value}, Email: ${email.value}, Message: ${message.value}`
+        );
       }
     };
 
@@ -56,7 +62,8 @@ h1 {
   margin-bottom: 16px;
 }
 
-input, textarea {
+input,
+textarea {
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;

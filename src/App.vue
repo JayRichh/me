@@ -1,55 +1,49 @@
 <template>
   <div id="app">
+    <div id="pingStats"></div>
     <Navbar />
     <router-view />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, nextTick } from 'vue';
-import Navbar from '@/client/components/Navbar.vue';
-import { useStore } from 'vuex';
-import { useRoute } from 'vue-router';
-import { toggleAndInitializeScene } from './helpers/gameUtils';
+import { defineComponent, onMounted, nextTick } from "vue";
+import Navbar from "./client/components/Navbar.vue";
+import { useStore } from "vuex";
+import { useRoute } from "vue-router";
+import { toggleAndInitializeScene } from "./helpers/gameUtils";
+
+type FocusItem = "about" | "projects" | "contact" | "default";
 
 export default defineComponent({
-  name: 'App',
+  name: "App",
   components: {
     Navbar,
   },
   setup() {
     const store = useStore();
     const route = useRoute();
-    const focusItem = (route.name || 'home').toString();
+    const focusItem = (route.name || "home").toString();
 
     onMounted(() => {
       nextTick(() => {
-        const threeContainer = document.getElementById('three-container');
-        const vueComponents = Array.from(document.querySelectorAll('.vue-component')) as HTMLElement[];
-        if (threeContainer && vueComponents.length > 0) {
-          store.commit('setGameMode', toggleAndInitializeScene(store.state.gameMode, threeContainer, vueComponents, focusItem));
+        const threeContainer = document.getElementById("three-container");
+        const homeViewElement = document.getElementById("home-view");
+        const hudElement = document.getElementById("navbar-hud");
+        if (threeContainer && homeViewElement && hudElement) {
+          toggleAndInitializeScene(store.state.gameMode, {
+            container: threeContainer,
+            vueComponents: [homeViewElement],
+            clientCubes: {},
+            hudElement,
+            focusItem: focusItem as FocusItem,
+          });
         }
       });
     });
   },
 });
 </script>
-Save to grepper
-gameUtils.ts
-No changes are needed here since it already accommodates the new focusItem parameter.
-
-createFixedScene.ts
-No changes are needed here either, as it already includes the logic for adjusting the camera based on the focusItem.
-
-With these changes, the HUD will be created and managed in Navbar.vue, and the scene will be initialized in App.vue. The helper methods in gameUtils.ts will be used for toggling and initializing the scene, ensuring DRY (Don't Repeat Yourself) methodology.
-
-Would you like to proceed with the next steps?
-
-
-
-
-
-
 
 <style lang="scss">
 #app {
@@ -96,5 +90,4 @@ nav {
   bottom: 50px;
   left: 50px;
 }
-
 </style>

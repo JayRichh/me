@@ -10,15 +10,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref } from "vue";
 
 export default defineComponent({
-  name: 'ProjectsComponent',
+  name: "ProjectsComponent",
   setup() {
     const projects = ref([
-      { id: 1, name: 'Project 1', url: 'https://example.com/project1' },
-      { id: 2, name: 'Project 2', url: 'https://example.com/project2' },
-      { id: 3, name: 'Project 3', url: 'https://example.com/project3' },
+      { id: 1, name: "Project 1", url: "https://example.com/project1" },
+      { id: 2, name: "Project 2", url: "https://example.com/project2" },
+      { id: 3, name: "Project 3", url: "https://example.com/project3" },
     ]);
 
     return {
