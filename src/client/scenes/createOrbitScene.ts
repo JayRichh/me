@@ -15,8 +15,8 @@ import {
   LensflareElement,
 } from "three/examples/jsm/objects/Lensflare.js";
 import System from "three-nebula";
-import { ClientData } from "@/helpers/gameUtils";
-import { eventsEmitter } from "@/client/sockets/socketClient";
+import { ClientData } from "../../helpers/gameUtils";
+import { eventsEmitter } from "../../client/sockets/socketClient";
 import TWEEN from "@tweenjs/tween.js";
 import {
   Emitter,

@@ -4,6 +4,7 @@ import Home from "../client/components/Home.vue";
 import About from "../client/components/About.vue";
 import Projects from "../client/components/Projects.vue";
 import Contact from "../client/components/Contact.vue";
+import store from "../store";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -31,6 +32,11 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  store.commit("setFocusItem", to.name);
+  next();
 });
 
 export default router;
