@@ -1,4 +1,5 @@
-import THREE, { Scene, Mesh, Material, Color as ThreeColor } from "three";
+import * as THREE from "three";
+import { Scene, Mesh, Material } from "three";
 import {
   System,
   Emitter,
@@ -8,15 +9,11 @@ import {
   Mass,
   Radius,
   Life,
-  Velocity,
-  PointZone,
-  Vector3D,
   Alpha,
   Scale,
   SpriteRenderer,
-  Body,
-  Force,
   Color,
+  PointZone,
 } from "three-nebula";
 
 /**
@@ -48,7 +45,7 @@ export class Nebula {
       ])
       .setBehaviours([
         new Alpha(1, 0),
-        new Color(new ThreeColor(0xffff11), new ThreeColor(0xffaacc)),
+        new Color(new THREE.Color(0xffff11), new THREE.Color(0xffaacc)),
         new Scale(0.01, 0.2),
       ])
       .setPosition({ x: 0, y: 0, z: 0 })
