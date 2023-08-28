@@ -4,7 +4,9 @@ import { Objects } from "../components/threeModules/Objects";
 import { Events } from "../components/threeModules/Events";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Nebula } from "../components/threeModules/Nebula";
+import { SceneOptions } from "@/typings/sceneOptions";
 import * as THREE from "three";
+import { useStore } from "vuex";
 
 /** Creates a new scene and returns the scene and camera.
  * @param {HTMLElement} container - The HTML element to add the renderer to.
@@ -16,14 +18,14 @@ import * as THREE from "three";
  *
  * @returns {Object} The created scene and camera.
  */
-export const createScene = (
-  container: HTMLElement,
-  vueComponents: HTMLElement[],
-  focusItem: string,
-  clientCubes: Record<string, THREE.Mesh>,
-  hudElement: HTMLElement,
-  gameMode: boolean
-) => {
+export const createScene = ({
+  container,
+  vueComponents,
+  focusItem,
+  clientCubes,
+}: SceneOptions) => {
+  const store = useStore();
+  const gameMode = store.state.gameMode;
   const baseScene = new BaseScene(clientCubes);
   baseScene.addToContainer(container);
   baseScene.setCameraPosition(focusItem);

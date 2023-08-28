@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { useStore } from "vuex";
 
 /**
  * The Objects class is responsible for creating and managing the objects in the scene.
@@ -12,6 +13,14 @@ export class Objects {
    * @param clientCubes - The record of clientCubes to which the cube will be added.
    */
   constructor(scene: THREE.Scene, clientCubes: Record<string, THREE.Mesh>) {
+    const store = useStore();
+
+    const vueComponents = [
+      document.querySelector(".about-card"),
+      document.querySelector(".projects-card"),
+      document.querySelector(".contact-card"),
+    ];
+
     const geometry = new THREE.BoxGeometry();
     const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     const cube = new THREE.Mesh(geometry, material);

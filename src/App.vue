@@ -9,9 +9,10 @@
 <script lang="ts">
 import { defineComponent, onMounted, nextTick } from "vue";
 import { useRoute } from "vue-router";
-import { toggleAndInitializeScene } from "./helpers/gameUtils";
+import { createScene } from "./client/scenes/createScene";
 import store from "./store/index";
 import Navbar from "./components/Navbar.vue";
+
 type FocusItem = "about" | "projects" | "contact" | "default";
 
 export default defineComponent({
@@ -25,13 +26,12 @@ export default defineComponent({
         const threeContainer = document.getElementById("app");
         const navbarElement = document.getElementById("navbar");
         const homeViewElement = document.getElementById("home-container");
-        const hudElement = document.getElementById("navbar");
-        if (threeContainer && navbarElement && homeViewElement && hudElement) {
-          toggleAndInitializeScene(store.state.gameMode, {
+
+        if (threeContainer && navbarElement && homeViewElement) {
+          createScene({
             container: threeContainer,
             vueComponents: [navbarElement, homeViewElement],
             clientCubes: {},
-            hudElement,
             focusItem: focusItem as FocusItem,
           });
         }
