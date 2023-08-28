@@ -18,7 +18,6 @@
 import { defineComponent, ref, computed } from "vue";
 
 export default defineComponent({
-  name: "ContactComponent",
   setup() {
     const name = ref("");
     const email = ref("");

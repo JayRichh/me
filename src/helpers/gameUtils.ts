@@ -1,4 +1,3 @@
-// src/helpers/gameUtils.ts
 import { createOrbitScene } from "../client/scenes/createOrbitScene";
 import { setFixedView } from "../client/scenes/createFixedScene";
 import * as THREE from "three";

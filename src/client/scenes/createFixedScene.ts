@@ -33,8 +33,9 @@ import {
   SpriteRenderer,
 } from "three-nebula";
 import TWEEN from "@tweenjs/tween.js";
-import { ClientData } from "../../helpers/gameUtils";
+import type { ClientData } from "../../helpers/gameUtils";
 import { eventsEmitter } from "../sockets/socketClient";
+import { type } from "os";
 
 type FocusItem = "about" | "projects" | "contact" | "default";
 
@@ -94,8 +95,8 @@ export const setFixedView = (
   scene.add(directionalLight);
 
   const textureLoader = new THREE.TextureLoader();
-  const textureFlare0 = textureLoader.load("../../../public/images/flare1.png");
-  const textureFlare1 = textureLoader.load("../../../public/images/flare2.png");
+  const textureFlare0 = textureLoader.load("../../../public/img/flare1.png");
+  const textureFlare1 = textureLoader.load("../../../public/img/flare2.png");
   const lensflare = new Lensflare();
   lensflare.addElement(new LensflareElement(textureFlare0, 512, 0));
   lensflare.addElement(new LensflareElement(textureFlare1, 120, 0.6));

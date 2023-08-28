@@ -19,16 +19,10 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  onBeforeUnmount,
-  ref,
-  computed,
-  onMounted,
-} from "vue";
+import { defineComponent, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { toggleAndInitializeScene } from "../../helpers/gameUtils";
+import { toggleAndInitializeScene } from "@/helpers/gameUtils";
 
 type FocusItem = "about" | "projects" | "contact" | "default";
 

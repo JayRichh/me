@@ -1,5 +1,4 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.json",
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
@@ -14,14 +13,12 @@
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": true,
     "sourceMap": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "types": [
       "webpack-env"
     ],
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
+      "@/*": ["src/*"],
       "*": [
         "node_modules/*"
       ]
@@ -43,7 +40,8 @@
     "*.tsx",
     "*.vue",
     "*.js",
-    "*.jsx"
+    "*.jsx",
+    "* * / * * / * .ts",
   ],
   "exclude": [
     "node_modules"

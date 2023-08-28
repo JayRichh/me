@@ -1,13 +1,13 @@
 <template>
   <div id="home-container" class="three-container">
     <div class="vue-component scene-item about-card">
-      <AboutComponent />
+      <About />
     </div>
     <div class="vue-component scene-item projects-card">
-      <ProjectsComponent />
+      <Projects />
     </div>
     <div class="vue-component scene-item contact-card">
-      <ContactComponent />
+      <Contact />
     </div>
   </div>
 </template>
@@ -16,16 +16,15 @@
 import { defineComponent, onMounted, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import { setFixedView } from "../scenes/createFixedScene";
-import { toggleAndInitializeScene } from "../../helpers/gameUtils";
-import AboutComponent from "./About.vue";
-import ProjectsComponent from "./Projects.vue";
-import ContactComponent from "./Contact.vue";
+import { toggleAndInitializeScene } from "@/helpers/gameUtils";
+import About from "./About.vue";
+import Projects from "./Projects.vue";
+import Contact from "./Contact.vue";
 
 type FocusItem = "about" | "projects" | "contact" | "default";
 
 export default defineComponent({
-  name: "HomeView",
+  name: "Home",
   setup() {
     let store = useStore();
     let route = useRoute();

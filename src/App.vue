@@ -1,39 +1,36 @@
 <template>
   <div id="app">
-    <div id="pingStats"></div>
     <Navbar />
-    <router-view />
+    <router-view></router-view>
+    <div id="pingStats"></div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, nextTick } from "vue";
-import Navbar from "./client/components/Navbar.vue";
-import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import { toggleAndInitializeScene } from "./helpers/gameUtils";
-
+import * as Vue from "vue";
+import { toggleAndInitializeScene } from "@/helpers/gameUtils";
+import store from "@/store/index";
+import Navbar from "./components/Navbar.vue";
 type FocusItem = "about" | "projects" | "contact" | "default";
 
 export default defineComponent({
   name: "App",
-  components: {
-    Navbar,
-  },
   setup() {
-    const store = useStore();
     const route = useRoute();
     const focusItem = (route.name || "home").toString();
 
     onMounted(() => {
       nextTick(() => {
-        const threeContainer = document.getElementById("three-container");
-        const homeViewElement = document.getElementById("home-view");
-        const hudElement = document.getElementById("navbar-hud");
-        if (threeContainer && homeViewElement && hudElement) {
+        const threeContainer = document.getElementById("app");
+        const navbarElement = document.getElementById("navbar");
+        const homeViewElement = document.getElementById("home-container");
+        const hudElement = document.getElementById("navbar");
+        if (threeContainer && navbarElement && homeViewElement && hudElement) {
           toggleAndInitializeScene(store.state.gameMode, {
             container: threeContainer,
-            vueComponents: [homeViewElement],
+            vueComponents: [navbarElement, homeViewElement],
             clientCubes: {},
             hudElement,
             focusItem: focusItem as FocusItem,

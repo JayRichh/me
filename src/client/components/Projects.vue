@@ -13,7 +13,7 @@
 import { defineComponent, ref } from "vue";
 
 export default defineComponent({
-  name: "ProjectsComponent",
+  name: "Projects",
   setup() {
     const projects = ref([
       { id: 1, name: "Project 1", url: "https://example.com/project1" },
