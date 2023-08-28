@@ -1,45 +1,44 @@
 import BaseScene from "../components/threeModules/BaseScene";
 import { Lights } from "../components/threeModules/Lights";
-import { Objects } from "../components/threeModules/Objects";
+import { Player } from "../components/threeModules/Player";
+import { StaticObjects } from "../components/threeModules/StaticObjects";
 import { Events } from "../components/threeModules/Events";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { Nebula } from "../components/threeModules/Nebula";
-import { SceneOptions } from "@/typings/sceneOptions";
 import * as THREE from "three";
 import { useStore } from "vuex";
 
 /** Creates a new scene and returns the scene and camera.
  * @param {HTMLElement} container - The HTML element to add the renderer to.
- * @param {HTMLElement[]} vueComponents - The Vue components to add to the scene.
- * @param {string} focusItem - The item to focus the camera on.
- * @param {Record<string, THREE.Mesh>} clientCubes - The client cubes to add to the scene.
- * @param {HTMLElement} hudElement - The HUD element to add to the scene.
- * @param {boolean} gameMode - Whether to use game mode or not.
+ * @param {Object} store - The Vuex store.
  *
  * @returns {Object} The created scene and camera.
  */
-export const createScene = ({
-  container,
-  vueComponents,
-  focusItem,
-  clientCubes,
-}: SceneOptions) => {
+export const createScene = (container: HTMLElement) => {
   const store = useStore();
   const gameMode = store.state.gameMode;
-  const baseScene = new BaseScene(clientCubes);
-  baseScene.addToContainer(container);
-  baseScene.setCameraPosition(focusItem);
+  const focusItem = store.state.focusItem;
+  const clientCubes: Record<string, THREE.Mesh> = {};
 
-  const nebula = new Nebula(baseScene.scene);
-  const geometry = new THREE.BoxGeometry();
-  const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-  const cube = new THREE.Mesh(geometry, material);
-  nebula.addToScene(baseScene.scene, cube, material);
+  const scene = new BaseScene(clientCubes);
+  scene.addToContainer(container);
+  scene.setCameraPosition(focusItem);
 
+  addComponentsToScene(scene, clientCubes);
+  setControls(scene, gameMode);
+  scene.animate();
+};
+
+function addComponentsToScene(
+  baseScene: BaseScene,
+  clientCubes: Record<string, THREE.Mesh>
+) {
   new Lights(baseScene.scene);
-  new Objects(baseScene.scene, clientCubes);
+  new Player(baseScene.scene, clientCubes);
+  new StaticObjects(baseScene.scene);
   new Events(baseScene.scene, clientCubes);
+}
 
+function setControls(baseScene: BaseScene, gameMode: boolean) {
   if (gameMode) {
     baseScene.setControls(
       new OrbitControls(baseScene.camera, baseScene.renderer.domElement)
@@ -47,8 +46,4 @@ export const createScene = ({
   } else {
     baseScene.setControls(null);
   }
-
-  baseScene.animate();
-
-  return { scene: baseScene.scene, camera: baseScene.camera };
-};
+}

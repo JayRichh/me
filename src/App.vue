@@ -11,7 +11,6 @@ import { defineComponent, onMounted, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import { createScene } from "./client/scenes/createScene";
 import store from "./store/index";
-import Navbar from "./components/Navbar.vue";
 
 type FocusItem = "about" | "projects" | "contact" | "default";
 
@@ -24,16 +23,8 @@ export default defineComponent({
     onMounted(() => {
       nextTick(() => {
         const threeContainer = document.getElementById("app");
-        const navbarElement = document.getElementById("navbar");
-        const homeViewElement = document.getElementById("home-container");
-
-        if (threeContainer && navbarElement && homeViewElement) {
-          createScene({
-            container: threeContainer,
-            vueComponents: [navbarElement, homeViewElement],
-            clientCubes: {},
-            focusItem: focusItem as FocusItem,
-          });
+        if (threeContainer) {
+          createScene(threeContainer);
         }
       });
     });
