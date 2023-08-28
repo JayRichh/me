@@ -4,6 +4,7 @@ import { createStore } from "vuex";
 export default createStore({
   state: {
     gameMode: false,
+    currentView: "About",
     focusItem: "home",
     hud: null,
   },
@@ -11,6 +12,9 @@ export default createStore({
   mutations: {
     setFocusItem(state, focusItem) {
       state.focusItem = focusItem;
+    },
+    setCurrentView(state, view) {
+      state.currentView = view;
     },
     toggleControlsMode(state) {
       state.gameMode = !state.gameMode;

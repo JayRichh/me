@@ -1,8 +1,5 @@
-import { createOrbitScene } from "../client/scenes/createOrbitScene";
-import { setFixedView } from "../client/scenes/createFixedScene";
+import { createScene } from "../client/scenes/createScene";
 import * as THREE from "three";
-import TWEEN from "@tweenjs/tween.js";
-import { eventsEmitter } from "../client/sockets/socketClient";
 
 export interface ClientData {
   p?: { x: number; y: number; z: number };
@@ -10,6 +7,7 @@ export interface ClientData {
 }
 
 type FocusItem = "about" | "projects" | "contact" | "default";
+
 interface SceneElements {
   container: HTMLElement;
   vueComponents: HTMLElement[];
@@ -17,28 +15,6 @@ interface SceneElements {
   hudElement: any;
   focusItem: any;
 }
-
-export const isGameModeToggled = (
-  gameMode: boolean,
-  threeContainer: HTMLElement,
-  vueComponents: HTMLElement[],
-  focusItem: FocusItem,
-  clientCubes: Record<string, THREE.Mesh>,
-  hudElement: HTMLElement
-) => {
-  if (gameMode) {
-    createOrbitScene(threeContainer, vueComponents, clientCubes, hudElement);
-  } else {
-    setFixedView(
-      threeContainer,
-      vueComponents,
-      focusItem,
-      clientCubes,
-      hudElement
-    );
-  }
-  return !gameMode;
-};
 
 export const toggleGameMode = (gameMode: boolean) => {
   return !gameMode;
@@ -48,18 +24,14 @@ export const toggleAndInitializeScene = (
   mode: boolean,
   sceneElements: SceneElements
 ) => {
-  mode = !mode;
   const { container, vueComponents, clientCubes, hudElement, focusItem } =
     sceneElements;
-  if (mode) {
-    return createOrbitScene(container, vueComponents, clientCubes, hudElement);
-  } else {
-    return setFixedView(
-      container,
-      vueComponents,
-      focusItem,
-      clientCubes,
-      hudElement
-    );
-  }
+  return createScene(
+    container,
+    vueComponents,
+    focusItem,
+    clientCubes,
+    hudElement,
+    mode
+  );
 };

@@ -9,9 +9,8 @@
 <script lang="ts">
 import { defineComponent, onMounted, nextTick } from "vue";
 import { useRoute } from "vue-router";
-import * as Vue from "vue";
-import { toggleAndInitializeScene } from "@/helpers/gameUtils";
-import store from "@/store/index";
+import { toggleAndInitializeScene } from "./helpers/gameUtils";
+import store from "./store/index";
 import Navbar from "./components/Navbar.vue";
 type FocusItem = "about" | "projects" | "contact" | "default";
 

@@ -2,6 +2,8 @@ import { io, Socket } from "socket.io-client";
 import * as THREE from "three";
 import { EventEmitter } from "events";
 import TWEEN from "@tweenjs/tween.js";
+import { PerspectiveCamera } from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 const UPDATE_INTERVAL = 50;
 const socket: Socket = io();
@@ -9,6 +11,7 @@ const myObject3D = new THREE.Object3D();
 const clientCubes: { [id: string]: THREE.Mesh } = {};
 let myId = "";
 const eventsEmitter = new EventEmitter();
+let controls: OrbitControls;
 
 socket.on("connect", () => {
   console.log("Connected");
@@ -36,6 +39,28 @@ socket.on("clients", (clients: Record<string, any>) => {
 
 socket.on("removeClient", (id: string) => {
   eventsEmitter.emit("removeClient", id);
+});
+
+export const setControls = (newControls: OrbitControls) => {
+  controls = newControls;
+};
+
+window.addEventListener("mousemove", () => {
+  if (controls) {
+    socket.emit("updateCamera", {
+      position: controls.object.position,
+      rotation: controls.object.rotation,
+    });
+  }
+});
+
+window.addEventListener("mouseup", () => {
+  if (controls) {
+    socket.emit("updateCamera", {
+      position: controls.object.position,
+      rotation: controls.object.rotation,
+    });
+  }
 });
 
 const emitUpdate = () => {

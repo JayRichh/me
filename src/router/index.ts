@@ -30,10 +30,18 @@ const routes: Array<RouteRecordRaw> = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(process.env.BASE_URL),
   routes,
+  scrollBehavior(to, from, savedPosition) {
+    if (to.hash) {
+      return { el: to.hash };
+    } else if (savedPosition) {
+      return savedPosition;
+    } else {
+      return { x: 0, y: 0, el: document.body };
+    }
+  },
 });
-
 router.beforeEach((to, from, next) => {
   store.commit("setFocusItem", to.name);
   next();

@@ -18,6 +18,7 @@
 import { defineComponent, ref, computed } from "vue";
 
 export default defineComponent({
+  name: "Contact",
   setup() {
     const name = ref("");
     const email = ref("");
