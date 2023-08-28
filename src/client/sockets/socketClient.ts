@@ -16,11 +16,9 @@ let controls: OrbitControls;
 socket.on("connect", () => {
   console.log("Connected");
 });
-
 socket.on("disconnect", (message: string) => {
   console.log(`Disconnected: ${message}`);
 });
-
 socket.on("id", (id: string) => {
   myId = id;
   setInterval(() => emitUpdate(), UPDATE_INTERVAL);

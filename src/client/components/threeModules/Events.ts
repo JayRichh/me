@@ -1,8 +1,8 @@
 import { Scene, Raycaster, Vector2, Object3D, Camera } from "three";
 import * as THREE from "three";
 import { eventsEmitter } from "../../sockets/socketClient";
+import { ClientData } from "../../../typings/clientData";
 import TWEEN from "@tweenjs/tween.js";
-import type { ClientData } from "../../../helpers/gameUtils";
 import BaseScene from "./BaseScene";
 
 /**
