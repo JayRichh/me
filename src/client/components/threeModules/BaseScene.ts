@@ -29,6 +29,7 @@ export default class BaseScene {
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.controls = null;
+    window.addEventListener('resize', this.onWindowResize.bind(this));
   }
 
   /**
@@ -70,5 +71,11 @@ export default class BaseScene {
       this.controls.update();
     }
     this.renderer.render(this.scene, this.camera);
+  }
+
+  onWindowResize() {
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 }
